@@ -34,8 +34,8 @@ jobs:
         run: make release VERSION=${{ github.ref_name }}
 
       - uses: softprops/action-gh-release@v3
-        prerelease: ${{ contains(github.ref_name, '-') }}
         with:
+          prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             release/*.zip
             release/*.tar.gz
