@@ -1,0 +1,23 @@
+# Dependabot opens a pull request when a newer version is available of:
+#   - the Go libraries in go.mod (goja, serial, systray, ...)
+#   - the GitHub Actions used by the workflows
+# Once a week, grouped into one pull request per kind, so it stays quiet.
+# The Build workflow checks every pull request, so a green check means it
+# still compiles; merge it when it suits you.
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-libraries:
+        patterns: ["*"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]

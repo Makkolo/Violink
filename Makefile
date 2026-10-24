@@ -4,9 +4,11 @@
 #   make linux      only Linux  -> build/linux-amd64/violink
 #   make windows    only Windows -> build/windows-amd64/violink.exe
 #   make run        build for Linux and run it in the console
-#   make release    zip/tar.gz packages in release/ (what GitHub Actions does for a tag)
+#   make release    zip/tar.gz packages in release/ (what GitHub Actions does for a tag),
+#                   including THIRD_PARTY_LICENSES.txt for the bundled libraries
 #   make deps       download dependencies and update go.sum (run once after cloning)
 #   make winres     regenerate the Windows icon/version resource
+#   make licenses   only write build/THIRD_PARTY_LICENSES.txt, to check it
 #   make clean      remove build/ and release/
 #
 # The build folders get a copy of runtime/ (config, scripts, simulations)
@@ -21,7 +23,7 @@ PKG     := ./cmd/violink
 
 export CGO_ENABLED = 0
 
-.PHONY: all linux windows run release deps winres clean clean-release
+.PHONY: all linux windows run release licenses deps winres clean clean-release
 
 all: linux windows
 
@@ -45,10 +47,16 @@ release: clean-release
 	tools/copy-runtime.sh release/violink-$(VERSION)-linux-amd64 linux
 	GOOS=windows GOARCH=amd64 $(GO) build -trimpath -ldflags "$(LDFLAGS) -H windowsgui" -o release/violink-$(VERSION)-windows-amd64/violink.exe $(PKG)
 	tools/copy-runtime.sh release/violink-$(VERSION)-windows-amd64 windows
+	tools/third-party-licenses.sh release/violink-$(VERSION)-linux-amd64/THIRD_PARTY_LICENSES.txt
+	cp release/violink-$(VERSION)-linux-amd64/THIRD_PARTY_LICENSES.txt release/violink-$(VERSION)-windows-amd64/
 	cd release && tar -czf violink-$(VERSION)-linux-amd64.tar.gz violink-$(VERSION)-linux-amd64
 	cd release && zip -qr violink-$(VERSION)-windows-amd64.zip violink-$(VERSION)-windows-amd64
 	cd release && sha256sum *.tar.gz *.zip > SHA256SUMS.txt
 	@ls -la release
+
+licenses:
+	mkdir -p build
+	tools/third-party-licenses.sh build/THIRD_PARTY_LICENSES.txt
 
 deps:
 	$(GO) mod tidy
