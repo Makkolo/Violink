@@ -1,0 +1,42 @@
+# Builds Linux and Windows packages and publishes a GitHub release
+# whenever a version tag is pushed:
+#
+#   git tag v0.1.0
+#   git push origin v0.1.0
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # Stamps the tag into the exe's file properties. If it fails, the
+      # committed resource file is used and the build still works.
+      - name: Windows resource
+        run: make winres VERSION=${{ github.ref_name }}
+        continue-on-error: true
+
+      - name: Build packages
+        run: make release VERSION=${{ github.ref_name }}
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/*.zip
+            release/*.tar.gz
+            release/SHA256SUMS.txt
+          generate_release_notes: true

@@ -1,0 +1,11 @@
+{
+  // Ctrl+Shift+B builds both platforms.
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "make all", "type": "shell", "command": "make", "group": { "kind": "build", "isDefault": true }, "problemMatcher": ["$go"] },
+    { "label": "make linux", "type": "shell", "command": "make linux", "problemMatcher": ["$go"] },
+    { "label": "make windows", "type": "shell", "command": "make windows", "problemMatcher": ["$go"] },
+    { "label": "make run", "type": "shell", "command": "make run", "problemMatcher": ["$go"] },
+    { "label": "make release", "type": "shell", "command": "make release", "problemMatcher": ["$go"] }
+  ]
+}

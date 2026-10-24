@@ -1,0 +1,12 @@
+{
+  "name": "adam",
+  "input": "adam",
+  "intervalMs": 1000,
+  "order": "sequence",
+  "checksum": "none",
+  "autoStart": false,
+  "note": "What an ADAM-4017 answers to #01 (after framing removed '>' and CR). Rename scripts/_adam.js to adam.js to use it.",
+  "lines": [
+    "+0{walk:3:9:0.1:3}+0{wave:4:6:120:3}+00.000+00.000+00.000+00.000+00.000+00.000"
+  ]
+}

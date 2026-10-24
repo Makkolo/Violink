@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Violink</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="">
+  <div>
+    <div class="brand">Vio<span>link</span></div>
+    <div class="meta" id="meta">connecting…</div>
+  </div>
+  <nav>
+    <button data-page="overview" class="active">Overview</button>
+    <button data-page="inputs">Inputs</button>
+    <button data-page="simulation">Simulation</button>
+    <button data-page="monitor">Monitor</button>
+    <button data-page="log">Log</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ===================================================== Overview -->
+<section class="page active" id="page-overview">
+  <h2>Inputs</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Last value</th><th>Age</th><th class="num">Values</th></tr></thead>
+    <tbody id="ov-inputs"></tbody>
+  </table></div>
+
+  <h2>Scripts</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Script</th><th>Inputs → output</th><th>Status</th><th class="num">Calls</th><th class="num">Errors</th><th>Last error</th></tr></thead>
+    <tbody id="ov-scripts"></tbody>
+  </table></div>
+
+  <h2>Outputs</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Last value</th><th>Age</th><th class="num">Sent</th><th class="num">Not sent</th></tr></thead>
+    <tbody id="ov-outputs"></tbody>
+  </table></div>
+</section>
+
+<!-- ===================================================== Inputs -->
+<section class="page" id="page-inputs">
+  <div class="split">
+    <div>
+      <div class="list" id="in-list"></div>
+      <div class="actions"><button class="btn" id="in-new">+ New input</button></div>
+    </div>
+
+    <div>
+      <div class="card">
+        <form class="form" id="in-form" autocomplete="off">
+          <label>Name <input name="name" required></label>
+          <label>Type <select name="type" id="in-type"></select></label>
+          <label class="check"><input type="checkbox" name="enabled"> Enabled</label>
+          <label class="wide">Note <input name="note" placeholder="optional description"></label>
+
+          <label data-for="tcp-client tcp-server udp">Address
+            <input name="address" class="mono" placeholder="192.168.1.50:4001 or :4001">
+          </label>
+          <label data-for="udp">Remote (for commands)
+            <input name="remote" class="mono" placeholder="empty = last sender">
+          </label>
+          <label data-for="tcp-client tcp-server udp com">Idle timeout (s)
+            <input name="idleTimeoutSec" type="number" min="0" placeholder="0 = never">
+          </label>
+
+          <label data-for="com">Port <input name="port" class="mono" list="ports" placeholder="COM3 or /dev/ttyUSB0"></label>
+          <label data-for="com">Baud
+            <select name="baud">
+              <option>1200</option><option>2400</option><option>4800</option><option>9600</option>
+              <option>19200</option><option>38400</option><option>57600</option><option>115200</option>
+            </select>
+          </label>
+          <label data-for="com">Data bits <select name="dataBits"><option>7</option><option>8</option></select></label>
+          <label data-for="com">Parity
+            <select name="parity"><option>none</option><option>odd</option><option>even</option><option>mark</option><option>space</option></select>
+          </label>
+          <label data-for="com">Stop bits <select name="stopBits"><option>1</option><option>1.5</option><option>2</option></select></label>
+
+          <fieldset class="wide">
+            <legend>Framing</legend>
+            <div class="form">
+              <label>Start marker <input name="framing.start" class="mono" placeholder="empty, or e.g. $"></label>
+              <label>End marker <input name="framing.end" class="mono" placeholder="\r\n"></label>
+              <label>Max length <input name="framing.maxLength" type="number" min="1"></label>
+              <label>Idle reset (ms) <input name="framing.idleResetMs" type="number" min="0" placeholder="0 = never"></label>
+              <label class="check"><input type="checkbox" name="framing.keepMarkers"> Keep markers in value</label>
+            </div>
+            <p class="hint">Escapes: \r \n \t \\ \xHH. Default is no start marker and \r\n as end.</p>
+          </fieldset>
+
+          <fieldset class="wide">
+            <legend>Polling</legend>
+            <div id="in-polls"></div>
+            <div class="actions"><button type="button" class="btn" id="in-add-poll">+ Poll command</button></div>
+            <p class="hint">Commands sent at a fixed interval, for sensors that only answer when asked. Include line endings, e.g. #01\r</p>
+          </fieldset>
+        </form>
+        <datalist id="ports"></datalist>
+        <div class="actions">
+          <button class="btn primary" id="in-save">Save and restart input</button>
+          <button class="btn danger" id="in-delete">Delete</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Send command</h2>
+        <div class="row">
+          <label>Text <input id="cmd-text" class="mono" placeholder="#01 or $PSXN,..."></label>
+          <label style="flex:0 0 140px">Line end
+            <select id="cmd-end">
+              <option value="">none</option><option value="\r" selected>CR</option>
+              <option value="\n">LF</option><option value="\r\n">CR LF</option>
+            </select>
+          </label>
+          <button class="btn primary" id="cmd-send">Send</button>
+        </div>
+        <h2>Received <span class="muted" style="font-weight:400">(commands in yellow, simulated in lilac)</span></h2>
+        <div class="stream" id="in-stream"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== Simulation -->
+<section class="page" id="page-simulation">
+  <div class="split">
+    <div>
+      <div class="list" id="sim-list"></div>
+      <div class="actions"><button class="btn" id="sim-new">+ New simulation</button></div>
+    </div>
+
+    <div>
+      <div class="card">
+        <form class="form" id="sim-form" autocomplete="off">
+          <label>Name <input name="name" required></label>
+          <label>Input <input name="input" list="input-names" placeholder="input it feeds"></label>
+          <label>Interval (ms) <input name="intervalMs" type="number" min="10"></label>
+          <label>Order
+            <select name="order"><option value="sequence">sequence: one line per tick</option><option value="all">all: every line each tick</option><option value="random">random: one random line</option></select>
+          </label>
+          <label>Checksum <select name="checksum"><option value="none">none</option><option value="nmea">NMEA (*HH)</option></select></label>
+          <label class="check"><input type="checkbox" name="autoStart"> Start with Violink</label>
+          <label class="wide">Note <input name="note"></label>
+          <label class="wide">Lines (one per line)
+            <textarea name="lines" class="mono" spellcheck="false"></textarea>
+          </label>
+        </form>
+        <datalist id="input-names"></datalist>
+        <p class="hint">
+          Patterns: {rand:min:max:dec} · {walk:min:max:step:dec} · {wave:min:max:periodSec:dec} · {ramp:min:max:periodSec:dec}
+          · {count} {count:start:step} · {pick:a|b|c} · {time} · {nmeatime} · {nmeadate} · {iso}
+        </p>
+        <div class="actions">
+          <button class="btn primary" id="sim-save">Save</button>
+          <button class="btn" id="sim-toggle">Start</button>
+          <button class="btn" id="sim-preview">Preview</button>
+          <button class="btn danger" id="sim-delete">Delete</button>
+        </div>
+        <div class="stream" id="sim-out" style="height:140px;margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <h2>Inject one value</h2>
+        <div class="row">
+          <label style="flex:0 0 180px">Input <input id="inj-name" list="input-names"></label>
+          <label>Value <input id="inj-text" class="mono"></label>
+          <button class="btn primary" id="inj-send">Inject</button>
+        </div>
+        <p class="hint">Delivered to the scripts as if it was received on that input.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== Monitor -->
+<section class="page" id="page-monitor">
+  <h2>Outputs</h2>
+  <div class="monitor-grid" id="mon-outputs"></div>
+  <h2>Input</h2>
+  <div class="row" style="margin-bottom:10px">
+    <label style="flex:0 0 260px">Show input <select id="mon-input"></select></label>
+  </div>
+  <div class="stream" id="mon-input-stream"></div>
+</section>
+
+<!-- ===================================================== Log -->
+<section class="page" id="page-log">
+  <div class="row" style="margin-bottom:10px">
+    <label style="flex:0 0 200px">Show
+      <select id="log-level"><option value="0">everything</option><option value="1" selected>info and up</option><option value="2">warnings and errors</option><option value="3">errors</option></select>
+    </label>
+  </div>
+  <div class="card" id="log-lines"></div>
+</section>
+
+</main>
+
+<footer>Violink · scriptable I/O bridge · COM · TCP · UDP → scripts → COM · TCP · UDP</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  // F5 runs Violink from build/linux-amd64 in the console (no tray icon).
+  // Run "make linux" once first so the folder has a config and scripts.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Violink (console)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/cmd/violink",
+      "args": ["-console", "-dir", "${workspaceFolder}/build/linux-amd64"]
+    }
+  ]
+}

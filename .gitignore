@@ -1,0 +1,25 @@
+# Build output (make, make release)
+/build/
+/release/
+
+# Created while running from a source folder
+data/
+logs/
+*.log
+*.tmp
+*.bak
+*.broken
+
+# Executables built by hand
+/violink
+*.exe
+
+# Editors
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

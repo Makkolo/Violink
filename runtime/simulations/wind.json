@@ -1,0 +1,21 @@
+{
+  "name": "wind",
+  "input": "wind",
+  "intervalMs": 1000,
+  "order": "sequence",
+  "checksum": "nmea",
+  "autoStart": false,
+  "note": "Anemometer: direction drifts around, speed swells over a minute. Every 10th line is flagged invalid (V).",
+  "lines": [
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,{walk:180:260:4:0},R,{wave:3:12:60:1},M,A",
+    "$WIMWV,,R,,M,V"
+  ]
+}

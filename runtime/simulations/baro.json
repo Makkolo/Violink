@@ -1,0 +1,12 @@
+{
+  "name": "baro",
+  "input": "baro",
+  "intervalMs": 1000,
+  "order": "sequence",
+  "checksum": "none",
+  "autoStart": false,
+  "note": "Barometer with slow drift.",
+  "lines": [
+    "P= {walk:1008:1018:0.05:2} hPa"
+  ]
+}
