@@ -3,12 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/github/violink-logo-256.png" alt="Violink logo" width="128">
-</p>
-
-<p align="center">
-  <b>Violink</b> reads values from instruments, runs them through small JavaScript files,<br>
-  and sends the results on to other programs. One executable, one config file, a folder of scripts.
+  A <b>Virtual</b> <b>I/O</b> <b>Link</b>
 </p>
 
 <p align="center">
@@ -23,9 +18,7 @@
 
 ## What it does
 
-Many setups have a separate small program per sensor: read a serial port,
-reformat a line, send it on over TCP. Violink replaces those with one
-program, where the per-sensor logic lives in a short script.
+Allows flexible data and protocol conversion by running self made javascript files between the chosen inputs and output. Scripts are loaded from the scripts folder on startup, no recompiling is needed. Multiple inputs can be used in one script, and any input can be used in multiple scripts.
 
 ```
   inputs                    scripts                      outputs
@@ -36,7 +29,7 @@ program, where the per-sensor logic lives in a short script.
                             ...                           COM
 ```
 
-- **Inputs**: COM, TCP client, TCP server, UDP. Polling for sensors that only answer when asked.
+- **Inputs**: COM, TCP client, TCP server, UDP. Polling for equipment that only answer when asked.
 - **Framing**: CR LF by default; any start and/or end marker (`$`…`\r\n`, STX…ETX, `>`…`\r`).
   Broken and overlong values are dropped.
 - **Scripts**: plain JavaScript (ES5 + most of ES6). One script can listen to several inputs,
@@ -57,11 +50,11 @@ program, where the per-sensor logic lives in a short script.
    the example scripts turn the simulated sensors into the lines sent on TCP port 4100.
 5. Connect your end program, or test with `nc 127.0.0.1 4100` / PuTTY (raw, port 4100).
 
-Then edit `violink.json` and the scripts for your own sensors.
+Then edit `violink.json` and the scripts as desired.
 
 ### Program folder
 
-Everything lives next to the executable:
+Everything lives next to the executable by default:
 
 ```
 violink.exe            the program (Linux: violink)
@@ -99,7 +92,7 @@ The full example is in [`runtime/violink.json`](runtime/violink.json).
 }
 ```
 
-Log disk use stays below about `maxSizeKB × (maxFiles + 1)`.
+Log files stays below about `maxSizeKB × (maxFiles + 1)`.
 
 ### Inputs
 
@@ -293,17 +286,6 @@ executable, but never overwrites files that are already there, so your test
 setup in `build/` survives a rebuild. VS Code: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>
 builds, <kbd>F5</kbd> debugs from `build/linux-amd64`.
 
-### Releasing
-
-Push a version tag; GitHub Actions builds both platforms and publishes a
-release with the zip, the tar.gz and checksums:
-
-```sh
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-`make release VERSION=v0.1.0` produces the same packages locally in `release/`.
 
 ## Project layout
 
@@ -331,12 +313,21 @@ tools/                build helpers
 .github/workflows/    build check and release
 ```
 
-### Extending
+### Todo
 
-- **A new input protocol** (Modbus, MQTT, OPC UA…): write `func runMyInput(in *Input) error`
-  in a new file, add it to `inputDrivers` in `input.go`. Byte streams go through
-  `in.feed()`, whole values through `in.deliver()`. Outputs work the same way via `outputDrivers`.
-- **A new script function**: add a `vm.Set(...)` line in `registerScriptFunctions` in `scriptfuncs.go`.
+- **A new input protocol** 
+  - Files
+  - Modbus
+  - MQTT
+  - OPC
+- **Improvements**
+  - TCP/UDP address whitelist
+  - Web server hardening
+  - Code review
+  - Optimization
+  - Error handling and recovery
+  - Script memory limit
+  - Limits and verification of config values
 
 ## License
 
