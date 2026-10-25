@@ -3,6 +3,8 @@
 // Every struct has a default function. The UnmarshalJSON methods start from
 // those defaults, so a field that is missing in the file keeps its default
 // instead of becoming 0 / "" / false.
+// MD
+// Todo: add value validation, allow no limits e.g. -1
 
 package main
 

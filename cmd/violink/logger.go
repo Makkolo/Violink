@@ -12,6 +12,8 @@
 //   warn  = Moon Whistle   (something is off, but we keep going)
 //   error = Black Whistle  (something failed)
 // There is no White Whistle level. Some depths are not meant for log files.
+// MD
+// Todo: optimize (e.g. const levelNames, lowercase etc.)
 
 package main
 
@@ -118,7 +120,7 @@ func openLogFile() error {
 // rotateLog must be called with logLock held.
 func rotateLog() {
 	logFile.Close()
-	logFile = nil
+	//logFile = nil //reduntant^?
 	base := strings.TrimSuffix(logPath, ".log")
 	if logMaxFiles == 0 {
 		os.Remove(logPath)
@@ -198,8 +200,6 @@ func recentLog() []LogLine {
 
 // safeCall runs fn and turns a panic into a logged error, so one bad input or
 // script can never take the whole program down.
-// Whatever can go wrong, will (Murphy's law, the Interstellar kind: it just
-// means "something that happens"). So we plan for it.
 func safeCall(what string, fn func()) (ok bool) {
 	defer func() {
 		if r := recover(); r != nil {

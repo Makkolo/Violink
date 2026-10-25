@@ -16,6 +16,9 @@
 // Keys are stored per script ("scriptname/key"), so two scripts can both use
 // a key called "last" without overwriting each other.
 
+// MD
+// Todo: recheck, limit validation change, no limit -1,
+
 package main
 
 import (
@@ -90,7 +93,10 @@ func loadPersist(cfg PersistConfig) {
 		logError("persist: %s is damaged (%v), moved to %s and starting empty", persistPath, err, bad)
 		return
 	}
+
 	persistLock.Lock()
+	defer persistLock.Unlock()
+
 	if f.Values != nil {
 		persistValues = f.Values
 	}
@@ -100,7 +106,6 @@ func loadPersist(cfg PersistConfig) {
 	for key := range persistSeries {
 		pruneSeries(key, time.Now().UnixMilli())
 	}
-	persistLock.Unlock()
 	logInfo("persist: loaded %d values and %d series (saved %s)", len(f.Values), len(f.Series), f.Saved.Format("2006-01-02 15:04:05"))
 }
 

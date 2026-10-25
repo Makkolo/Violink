@@ -21,6 +21,8 @@
 //   tray.go         the system tray icon
 //
 // A bridge over the abyss, lit by a field of violets.
+// MD
+// Todo: Improve error handling
 
 package main
 
@@ -110,7 +112,7 @@ func shutdown() {
 	stopScripts()
 	stopAllOutputs()
 	stopPersist()
-	logInfo("stopped. El Psy Kongroo.")
+	logInfo("stopped.")
 	closeLog()
 }
 
