@@ -27,69 +27,55 @@
   },
   "inputs": [
     {
-      "name": "wind",
+      "name": "someTcpClientInput",
       "type": "tcp-client",
       "enabled": false,
-      "note": "Anemometer on a serial server, NMEA MWV sentences",
-      "address": "192.168.1.50:4001",
-      "framing": { "start": "$", "end": "\r\n", "maxLength": 200, "keepMarkers": true, "idleResetMs": 2000 },
+      "note": "Some info",
+      "address": "192.168.1.123:4041",
+      "framing": { "start": "StartOfMessage", "end": "\r\n", "maxLength": 100, "keepMarkers": true, "idleResetMs": 2000},
       "idleTimeoutSec": 30
     },
     {
-      "name": "baro",
+      "name": "someComInput",
       "type": "com",
       "enabled": false,
-      "note": "Barometer, sends 'P= 1013.25 hPa' once a second",
-      "port": "COM3",
+      "port": "COM123",
       "baud": 9600,
       "dataBits": 8,
       "parity": "none",
-      "stopBits": "1",
-      "framing": { "start": "", "end": "\r\n", "maxLength": 100 }
+      "stopBits": 1
     },
     {
-      "name": "adam",
-      "type": "com",
-      "enabled": false,
-      "note": "ADAM-4017 analog input module at address 01 on RS-485, answers end with CR only",
-      "port": "COM4",
-      "baud": 9600,
-      "framing": { "start": ">", "end": "\r", "maxLength": 100, "keepMarkers": false },
-      "poll": [ { "command": "#01\r", "intervalMs": 1000 } ]
-    },
-    {
-      "name": "gps",
+      "name": "someUdpInput",
       "type": "udp",
-      "enabled": true,
-      "note": "NMEA over UDP, port 10110 is the usual NMEA port",
-      "address": ":10110",
-      "framing": { "start": "", "end": "\r\n", "maxLength": 200 }
+      "enabled": false,
+      "address": "127.0.0.1:12345",
+      "remote": "192.168.1.231:12345"
     }
   ],
   "outputs": [
     {
-      "name": "main",
+      "name": "someTcpServerOutput",
       "type": "tcp-server",
-      "enabled": true,
-      "note": "The end program connects here",
+      "enabled": false,
+      "note": "Some comment",
       "address": ":4100",
       "lineEnd": "\r\n",
       "resendLastOnConnect": true
     },
     {
-      "name": "display",
+      "name": "someComOutput",
       "type": "com",
       "enabled": false,
-      "note": "A serial display",
-      "port": "COM5",
+      "port": "COM321",
       "baud": 9600,
       "lineEnd": "\r\n"
     },
     {
-      "name": "udp-out",
+      "name": "someUdpOutput",
       "type": "udp",
       "enabled": false,
-      "address": "127.0.0.1:10111",
+      "address": "127.0.0.1:8008",
       "lineEnd": "\r\n"
     }
   ]

@@ -1,0 +1,13 @@
+{
+  "name": "template",
+  "input": "inputName",
+  "intervalMs": 20000,
+  "order": "sequence",
+  "checksum": "none",
+  "autoStart": false,
+  "note": "Some info",
+  "lines": [
+    "StartOfMessage aaa,bbb,ccc,d,e,f",
+    "StartOfMessage aa{rand:0:9},bbb,ccc,d,e,f"
+  ]
+}
