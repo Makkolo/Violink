@@ -205,26 +205,6 @@ The lines can use the following patterns for generated values:
 | Monitor | live values sent on every output, and on any input |
 | Log | recent log lines, filtered by level |
 
-
-## Building
-
-Needs Go 1.26 or newer and `make` (plus `zip` for `make release`).
-
-```sh
-git clone https://github.com/<you>/violink.git
-cd violink
-make deps          # once: downloads dependencies, writes go.sum (commit it)
-make               # build/linux-amd64/violink and build/windows-amd64/violink.exe
-make run           # build for Linux and run in the console
-go test ./...      # framing, checksum and aggregate tests
-```
-
-`make` copies the example config, scripts and simulations next to each
-executable, but never overwrites files that are already there, so your test
-setup in `build/` survives a rebuild. VS Code: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>
-builds, <kbd>F5</kbd> debugs from `build/linux-amd64`.
-
-
 ## Project layout
 
 ```
