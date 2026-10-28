@@ -34,6 +34,26 @@ Allows flexible data and protocol conversion by running customizable javascript 
 - **Runs hidden** in the system tray (Windows, KDE, GNOME). Log files rotate by size.
 - **Linux and Windows**, x64. No installer, no runtime to install.
 
+## Use cases
+
+- **Protocol translation**: a sensor speaks its own ASCII format, the receiving
+  software expects NMEA (or the other way round). Parse, convert units, rebuild.
+- **Serial to network**: share one COM device with several programs over TCP or UDP.
+- **Splitting**: one input feeds several scripts, each sending its own format to
+  its own output.
+- **Combining**: merge wind, pressure and temperature from separate devices into
+  one message.
+- **Polling simple devices**: send read commands on an interval (e.g. ADAM
+  modules) and scale raw values to real units.
+- **Averaging and statistics**: 10-minute means, gusts, minimum and maximum,
+  or Hs from wave heights. History survives a restart.
+- **Data quality**: drop bad checksums or out-of-range values, and flag stale
+  inputs with `age()`.
+- **Testing without hardware**: simulate devices to test scripts or the
+  receiving software, and use the Monitor page to watch traffic.
+- **Replacing one-off converters**: many small hardcoded programs become one
+  service with a script each.
+
 ## Configuration
 
 `violink.json` is plain JSON. Fields that are left out get their default value.
@@ -44,7 +64,7 @@ The full example is in [`runtime/violink.json`](runtime/violink.json).
   "tray": true,
   "webui":   { "enabled": true, "listen": "127.0.0.1:8470" },   // ":8470" = whole network
   "log":     { "folder": "logs", "level": "info", "maxSizeKB": 1024, "maxFiles": 5 },
-  "persist": { "file": "data/persist.json", "saveIntervalSec": 60, "maxSeriesMinutes": 180 },
+  "persist": { "file": "data/persist.json", "saveIntervalSec": 60, "maxSeriesMinutes": 180, "maxSeriesSamples": 1024 },
   "scripts": { "folder": "scripts", "timeoutMs": 1000, "queueLength": 64 },
   "simulations": { "folder": "simulations" },
   "inputs":  [ ... ],
@@ -85,10 +105,13 @@ Log files stays below about `maxSizeKB × (maxFiles + 1)`.
 
 | Field | | |
 |---|---|---|
+| `name` | all | used in scripts, must be unique |
 | `type` | | `tcp-server` (sends to all connected clients), `tcp-client`, `udp`, `com` |
+| `enabled` | all | `false` keeps it in the file but does not open it |
 | `address` | | server: listen address · client/udp: `host:port` |
 | `lineEnd` | `"\r\n"` | added after every value |
 | `resendLastOnConnect` | `false` | a newly connected TCP client gets the last value at once |
+| `note` | all | free text |
 
 Outputs keep no queue: only the newest value matters, and if an output is not
 connected the value is dropped (and shown as "not sent" in the web UI).
@@ -100,9 +123,10 @@ A script is a .js file in scripts/. In each script, the script object defines in
 
 ```js
 const script = {
-    inputs: ["inputName"],   // inputs to listen to
+    inputs: ["inputName"],   // inputs to listen to, as string or array of strings
     output: "outputName",     // where returned values go
     interval: 60000,    // ms between onTimer() calls (leave out for none)
+    enabled: false
 };
 
 function onStart() { }                 // once, after loading
